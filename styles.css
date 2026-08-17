@@ -12,6 +12,9 @@
   --amber: #fbbf24;
   --amber-soft: #fcd34d;
   --emerald: #34d399;
+  --sky: #38bdf8;
+  --teal: #2dd4bf;
+  --mint: #4ade80;
   --hairline: rgba(255, 255, 255, 0.1);
   --surface: rgba(255, 255, 255, 0.03);
   --surface-hi: rgba(255, 255, 255, 0.06);
@@ -64,22 +67,22 @@ p { margin: 0; }
   filter: blur(120px);
 }
 
-.blob-violet {
+.blob-azure {
   left: 25%;
   top: 0;
-  width: 500px;
-  height: 500px;
+  width: 560px;
+  height: 560px;
   transform: translateX(-50%);
-  background: rgba(109, 40, 217, 0.2);
+  background: rgba(56, 189, 248, 0.17);
 }
 
 .blob-emerald {
   right: 25%;
   top: 33%;
-  width: 400px;
-  height: 400px;
+  width: 440px;
+  height: 440px;
   transform: translateX(50%);
-  background: rgba(5, 150, 105, 0.15);
+  background: rgba(45, 212, 191, 0.15);
 }
 
 /* ---------- Header ---------- */
@@ -114,8 +117,8 @@ p { margin: 0; }
   height: 36px;
   flex-shrink: 0;
   border-radius: 8px;
-  background: linear-gradient(to bottom right, #8b5cf6, #10b981);
-  color: #fff;
+  background: linear-gradient(to bottom right, #38bdf8, #34d399);
+  color: #052e2b;
 }
 
 .brand-text { line-height: 1.1; }
@@ -680,6 +683,164 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   outline-offset: 2px;
 }
 
+/* ==========================================================================
+   App cards (tabs 3-8) — real brand logos, payout, tier and promo code
+   ========================================================================== */
+
+.app-card { gap: 0; }
+
+/* Logo tile: a neutral light plate so dark brand marks stay legible on the
+   near-black background, and light marks don't blow out. */
+.logo-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(var(--accent), 0.2);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-tile img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo-tile .avatar-glow { border-radius: 12px; }
+.card:hover .logo-tile { transform: scale(1.05); box-shadow: 0 0 0 1px rgba(var(--accent), 0.55); }
+.card:hover .logo-tile .avatar-glow { opacity: 0.45; }
+
+.app-card .card-titles { text-align: center; }
+
+.app-card .card-sub {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-mid);
+}
+
+/* Payout row */
+.payout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.payout-amt {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: rgb(var(--accent));
+  text-shadow: 0 0 22px rgba(var(--accent), 0.35);
+}
+
+.payout-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 7px;
+  border: 1px solid currentColor;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  white-space: nowrap;
+}
+
+.tier-free     { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+.tier-deposit  { color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
+.tier-purchase { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+
+/* Promo code row — fixed height on both states so every CTA lines up. */
+.code-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  margin-top: 10px;
+  padding: 4px 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.code-row.is-empty {
+  justify-content: center;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: transparent;
+}
+
+.code-none {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.code-key {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+}
+
+.code-value {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--teal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  padding: 3px 6px;
+  border: 1px solid rgba(45, 212, 191, 0.4);
+  border-radius: 6px;
+  background: rgba(45, 212, 191, 0.12);
+  color: var(--teal);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.code-copy:hover { background: rgba(45, 212, 191, 0.22); color: #ccfbf1; }
+
+.code-copy.is-copied {
+  border-color: rgba(74, 222, 128, 0.6);
+  background: rgba(74, 222, 128, 0.2);
+  color: #bbf7d0;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (min-width: 640px) {
@@ -703,10 +864,19 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 @media (min-width: 1280px) {
   .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  /* App cards carry more content, so they breathe better at four across. */
+  .grid-apps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   .card:hover, .engine:hover, .engine-btn:hover { transform: none; }
+}
+
+/* Pale marks with transparent surroundings are unreadable on the white
+   plate, so they get a dark tile instead. */
+.logo-tile.is-dark {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: #0b0f14;
 }

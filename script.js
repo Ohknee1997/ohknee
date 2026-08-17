@@ -221,11 +221,118 @@
     });
   }
 
+  /* ------------------------------------------------------------------
+     Promo code copy buttons.
+     navigator.clipboard is often blocked on file:// pages, so this falls
+     back to a hidden textarea + execCommand, then to selecting the code
+     text so a manual copy is one keystroke. Never throws.
+     ------------------------------------------------------------------ */
+  function legacyCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      ta.setSelectionRange(0, text.length);
+    } catch (err) {}
+    var ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch (err) {
+      ok = false;
+    }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  /* navigator.clipboard is unavailable on file:// in several browsers, and in
+     some sandboxes its promise hangs forever instead of rejecting. So we race
+     it against a short timer and fall back to the classic textarea trick,
+     which guarantees the button always reports back to the user. */
+  function copyText(text) {
+    return new Promise(function (resolve, reject) {
+      var settled = false;
+
+      function finish(viaApi) {
+        if (settled) return;
+        settled = true;
+        if (viaApi || legacyCopy(text)) {
+          resolve();
+        } else {
+          reject(new Error("copy unavailable"));
+        }
+      }
+
+      var timer = window.setTimeout(function () { finish(false); }, 500);
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          navigator.clipboard.writeText(text).then(
+            function () { window.clearTimeout(timer); finish(true); },
+            function () { window.clearTimeout(timer); finish(false); }
+          );
+          return;
+        } catch (err) {
+          /* fall through */
+        }
+      }
+      window.clearTimeout(timer);
+      finish(false);
+    });
+  }
+
+  function bindCodeCopy() {
+    var buttons = document.querySelectorAll(".code-copy");
+    for (var i = 0; i < buttons.length; i++) {
+      (function (btn) {
+        var label = btn.querySelector(".code-copy-text");
+        var original = label ? label.textContent : "";
+        var timer = null;
+
+        function flash(msg) {
+          btn.classList.add("is-copied");
+          if (label) label.textContent = msg;
+          if (timer) window.clearTimeout(timer);
+          timer = window.setTimeout(function () {
+            btn.classList.remove("is-copied");
+            if (label) label.textContent = original;
+          }, 1600);
+        }
+
+        btn.addEventListener("click", function () {
+          var code = btn.getAttribute("data-copy") || "";
+          copyText(code).then(
+            function () {
+              flash("COPIED");
+            },
+            function () {
+              var row = btn.parentNode;
+              var node = row && row.querySelector(".code-value");
+              if (node && window.getSelection && document.createRange) {
+                var range = document.createRange();
+                range.selectNodeContents(node);
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+              }
+              flash("SELECT");
+            }
+          );
+        });
+      })(buttons[i]);
+    }
+  }
+
   function init() {
     applySavedLabels();
     bindEditButtons();
     bindTabsAndSearch();
     bindPillars();
+    bindCodeCopy();
   }
 
   if (document.readyState === "loading") {
